@@ -41,13 +41,13 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy manifest to server
+      - name: Copy k8s manifests to server
         run: |
-          scp -i ~/.ssh/id_rsa k8s/deployment.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/projects/viewtherecipe-frontend/deployment.yaml
+          scp -i ~/.ssh/id_rsa -r k8s/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/projects/viewtherecipe-frontend/
 
       - name: Deploy on server
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            kubectl apply -f /projects/viewtherecipe-frontend/deployment.yaml
+            kubectl apply -f /projects/viewtherecipe-frontend/k8s/
             kubectl rollout restart deployment/viewtherecipe-frontend -n savetherecipe
           EOF

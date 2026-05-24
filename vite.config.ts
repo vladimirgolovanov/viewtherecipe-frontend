@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5174,
     allowedHosts: true,
     proxy: {
-      '/api': 'http://localhost:8001',
+      '/api': 'http://localhost:11456',
     },
   },
   plugins: [
