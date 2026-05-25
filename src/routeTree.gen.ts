@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RecipesRouteImport } from './routes/recipes'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecipesIndexRouteImport } from './routes/recipes.index'
 import { Route as RecipesIdRouteImport } from './routes/recipes.$id'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecipesRoute = RecipesRouteImport.update({
   id: '/recipes',
   path: '/recipes',
@@ -45,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/recipes': typeof RecipesRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/': typeof RecipesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/settings': typeof SettingsRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes': typeof RecipesIndexRoute
 }
@@ -59,25 +67,47 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/recipes': typeof RecipesRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/recipes/$id': typeof RecipesIdRoute
   '/recipes/': typeof RecipesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/recipes' | '/recipes/$id' | '/recipes/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/recipes'
+    | '/settings'
+    | '/recipes/$id'
+    | '/recipes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/recipes/$id' | '/recipes'
-  id: '__root__' | '/' | '/login' | '/recipes' | '/recipes/$id' | '/recipes/'
+  to: '/' | '/login' | '/settings' | '/recipes/$id' | '/recipes'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/recipes'
+    | '/settings'
+    | '/recipes/$id'
+    | '/recipes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   RecipesRoute: typeof RecipesRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recipes': {
       id: '/recipes'
       path: '/recipes'
@@ -133,6 +163,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   RecipesRoute: RecipesRouteWithChildren,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
