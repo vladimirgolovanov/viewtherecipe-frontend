@@ -9,7 +9,6 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': 'http://localhost:11456',
-      '/mcp': 'http://localhost:11456',
     },
   },
   plugins: [
