@@ -29,12 +29,20 @@ function RecipesPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-800">Мои рецепты</h1>
-        <button
-          onClick={logout}
-          className="text-sm text-gray-500 hover:text-gray-700 transition"
-        >
-          Выйти
-        </button>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/settings"
+            className="text-sm text-gray-500 hover:text-gray-700 transition"
+          >
+            Настройки
+          </Link>
+          <button
+            onClick={logout}
+            className="text-sm text-gray-500 hover:text-gray-700 transition"
+          >
+            Выйти
+          </button>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8">

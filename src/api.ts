@@ -1,3 +1,9 @@
+export interface UserSettings {
+  api_token: string
+  mcp_url: string
+  mcp_config: object
+}
+
 export interface RecipeSummary {
   id: number
   title: string
@@ -54,5 +60,8 @@ export const api = {
   recipes: {
     list: () => request<RecipeCollection>('/recipes'),
     get: (id: number) => request<RecipeDetail>(`/recipes/${id}`),
+  },
+  user: {
+    me: () => request<UserSettings>('/me'),
   },
 }
