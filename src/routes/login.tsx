@@ -15,29 +15,46 @@ function LoginPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      navigate({ to: '/recipes' })
-      return
-    }
-
-    window.onTelegramAuth = async (user) => {
-      const params = new URLSearchParams(user)
-      const res = await fetch(`/api/auth/telegram?${params}`)
-      const data = await res.json()
-      if (data.token) {
-        localStorage.setItem('token', data.token)
-        navigate({ to: '/recipes' })
+    const init = async () => {
+      if (localStorage.getItem('token')) {
+        await navigate({ to: '/recipes' })
+        return
       }
+
+      window.onTelegramAuth = async (user) => {
+        const params = new URLSearchParams(user)
+
+        const urlParams = new URLSearchParams(window.location.search)
+        const redirect = urlParams.get('redirect')
+        if (redirect) {
+          params.set('redirect', redirect)
+        }
+
+        const res = await fetch(`/api/auth/telegram?${params}`)
+
+        if (redirect && res.redirected) {
+          window.location.href = res.url
+          return
+        }
+
+        const data = await res.json()
+        if (data.token) {
+          localStorage.setItem('token', data.token)
+          await navigate({ to: '/recipes' })
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://telegram.org/js/telegram-widget.js?22'
+      script.async = true
+      script.setAttribute('data-telegram-login', import.meta.env.VITE_TELEGRAM_BOT_NAME ?? 'savetherecipe_bot')
+      script.setAttribute('data-size', 'large')
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)')
+      script.setAttribute('data-request-access', 'write')
+      document.getElementById('telegram-widget')?.appendChild(script)
     }
 
-    const script = document.createElement('script')
-    script.src = 'https://telegram.org/js/telegram-widget.js?22'
-    script.async = true
-    script.setAttribute('data-telegram-login', import.meta.env.VITE_TELEGRAM_BOT_NAME ?? 'savetherecipe_bot')
-    script.setAttribute('data-size', 'large')
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)')
-    script.setAttribute('data-request-access', 'write')
-    document.getElementById('telegram-widget')?.appendChild(script)
+    init()
   }, [navigate])
 
   return (
