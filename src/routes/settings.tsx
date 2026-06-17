@@ -19,27 +19,47 @@ export const Route = createFileRoute('/settings')({
   component: SettingsPage,
 })
 
+const MCP_NAME = 'Save The Recipe'
+const MCP_URL = 'https://savetherecipe.golovanov.me/mcp'
+
+function CopyField({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function copy() {
+    await navigator.clipboard.writeText(value)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div>
+      <p className="text-xs font-medium text-gray-500 mb-1">{label}</p>
+      <div className="relative">
+        <code className="block bg-gray-100 text-gray-800 text-xs rounded-lg px-4 py-3 pr-24 break-all font-mono">
+          {value}
+        </code>
+        <button
+          onClick={copy}
+          className="absolute top-1/2 -translate-y-1/2 right-2 text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded transition"
+        >
+          {copied ? 'Скопировано!' : 'Скопировать'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function SettingsPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError } = useQuery(meQuery)
-  const [copied, setCopied] = useState(false)
 
   function logout() {
     localStorage.removeItem('token')
     navigate({ to: '/login' })
   }
 
-  async function copyConfig() {
-    if (!data) return
-    await navigator.clipboard.writeText(JSON.stringify(data.mcp_config, null, 2))
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   if (isLoading) return <Spinner />
   if (isError) return <ErrorState />
-
-  const configJson = JSON.stringify(data!.mcp_config, null, 2)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -58,49 +78,20 @@ function SettingsPage() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
-        <section className="bg-white rounded-xl shadow-sm px-6 py-5">
-          <h2 className="text-lg font-semibold text-gray-800 mb-1">
-            Подключение к Claude Desktop
-          </h2>
-          <p className="text-sm text-gray-500 mb-4">
-            Добавьте этот конфиг в файл настроек Claude Desktop, чтобы подключить MCP-сервер с вашими рецептами.
-          </p>
-
-          <ol className="text-sm text-gray-600 space-y-1 mb-5 list-decimal list-inside">
-            <li>
-              Откройте{' '}
-              <span className="font-mono text-xs bg-gray-100 px-1 py-0.5 rounded">
-                claude_desktop_config.json
-              </span>{' '}
-              — в Claude Desktop:{' '}
-              <span className="italic">Настройки → Developer → Edit Config</span>
-            </li>
-            <li>Вставьте JSON ниже (объедините с существующим содержимым файла, если оно есть)</li>
-            <li>Перезапустите Claude Desktop</li>
-          </ol>
-
-          <div className="relative">
-            <pre className="bg-gray-900 text-green-300 text-xs rounded-lg px-4 py-4 overflow-x-auto leading-relaxed">
-              {configJson}
-            </pre>
-            <button
-              onClick={copyConfig}
-              className="absolute top-2 right-2 text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded transition"
-            >
-              {copied ? 'Скопировано!' : 'Скопировать'}
-            </button>
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        <section className="bg-white rounded-xl shadow-sm px-6 py-5 space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-1">
+              Подключение Remote MCP
+            </h2>
+            <p className="text-sm text-gray-500">
+              Используйте эти данные для подключения MCP-сервера в Claude.ai.
+            </p>
           </div>
-        </section>
-
-        <section className="bg-white rounded-xl shadow-sm px-6 py-5">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">API токен</h2>
-          <p className="text-sm text-gray-500 mb-2">
-            Используйте этот токен для прямых запросов к API.
-          </p>
-          <code className="block bg-gray-100 text-gray-800 text-xs rounded-lg px-4 py-3 break-all font-mono">
-            {data!.api_token}
-          </code>
+          <CopyField label="Name" value={MCP_NAME} />
+          <CopyField label="Remote MCP server URL" value={MCP_URL} />
+          <CopyField label="OAuth Client ID" value={data!.client_id} />
+          <CopyField label="OAuth Client Secret" value={data!.client_secret} />
         </section>
       </main>
     </div>

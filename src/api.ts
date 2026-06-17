@@ -1,7 +1,6 @@
 export interface UserSettings {
-  api_token: string
-  mcp_url: string
-  mcp_config: object
+  client_id: string
+  client_secret: string
 }
 
 export interface RecipeSummary {
