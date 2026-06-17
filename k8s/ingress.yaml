@@ -23,6 +23,34 @@ spec:
                 name: viewtherecipe
                 port:
                   number: 11456
+          - path: /mcp
+            pathType: Prefix
+            backend:
+              service:
+                name: viewtherecipe
+                port:
+                  number: 11456
+          - path: /authorize
+            pathType: Prefix
+            backend:
+              service:
+                name: viewtherecipe
+                port:
+                  number: 11456
+          - path: /token
+            pathType: Prefix
+            backend:
+              service:
+                name: viewtherecipe
+                port:
+                  number: 11456
+          - path: /.well-known
+            pathType: Prefix
+            backend:
+              service:
+                name: viewtherecipe
+                port:
+                  number: 11456
           - path: /
             pathType: Prefix
             backend:
