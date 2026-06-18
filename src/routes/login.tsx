@@ -19,9 +19,7 @@ function LoginPage() {
       window.onTelegramAuth = async (user) => {
         const params = new URLSearchParams(user)
 
-        // URLSearchParams.get() truncates at unencoded & — extract raw value instead
-        const match = window.location.search.match(/[?&]redirect=(.+)$/)
-        const redirect = match ? match[1] : null
+        const redirect = new URLSearchParams(window.location.search).get('redirect')
         if (redirect) {
           params.set('redirect', redirect)
         }
