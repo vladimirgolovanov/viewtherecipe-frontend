@@ -17,8 +17,8 @@ function RecipesPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError } = useQuery(recipesQuery)
 
-  function logout() {
-    localStorage.removeItem('token')
+  async function logout() {
+    await api.auth.logout()
     navigate({ to: '/login' })
   }
 

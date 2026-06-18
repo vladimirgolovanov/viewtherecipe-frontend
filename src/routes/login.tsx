@@ -16,11 +16,6 @@ function LoginPage() {
 
   useEffect(() => {
     const init = async () => {
-      if (localStorage.getItem('token')) {
-        await navigate({ to: '/recipes' })
-        return
-      }
-
       window.onTelegramAuth = async (user) => {
         const params = new URLSearchParams(user)
 
@@ -30,18 +25,16 @@ function LoginPage() {
           params.set('redirect', redirect)
         }
 
-        const res = await fetch(`/api/auth/telegram?${params}`)
+        const res = await fetch(`/api/auth/telegram?${params}`, {
+          credentials: 'include',
+        })
 
-        if (redirect && res.redirected) {
+        if (res.redirected) {
           window.location.href = res.url
           return
         }
 
-        const data = await res.json()
-        if (data.token) {
-          localStorage.setItem('token', data.token)
-          await navigate({ to: '/recipes' })
-        }
+        await navigate({ to: '/recipes' })
       }
 
       const script = document.createElement('script')

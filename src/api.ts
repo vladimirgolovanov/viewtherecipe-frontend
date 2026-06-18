@@ -1,3 +1,5 @@
+import { queryOptions } from '@tanstack/react-query'
+
 export interface UserSettings {
   client_id: string
   client_secret: string
@@ -31,19 +33,16 @@ class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('token')
-
   const res = await fetch(`/api${path}`, {
     ...options,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   })
 
   if (res.status === 401) {
-    localStorage.removeItem('token')
     window.location.href = '/login'
     throw new ApiError(401, 'Unauthorized')
   }
@@ -55,6 +54,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>
 }
 
+export const meQuery = queryOptions({
+  queryKey: ['user', 'me'],
+  queryFn: () => request<UserSettings>('/me'),
+  retry: false,
+})
+
 export const api = {
   recipes: {
     list: () => request<RecipeCollection>('/recipes'),
@@ -62,5 +67,9 @@ export const api = {
   },
   user: {
     me: () => request<UserSettings>('/me'),
+  },
+  auth: {
+    logout: () =>
+      fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }),
   },
 }

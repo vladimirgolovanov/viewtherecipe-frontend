@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, Link } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery, queryOptions } from '@tanstack/react-query'
 import { api } from '../api'
 
@@ -9,11 +9,6 @@ const recipeQuery = (id: number) =>
   })
 
 export const Route = createFileRoute('/recipes/$id')({
-  beforeLoad: () => {
-    if (!localStorage.getItem('token')) {
-      throw redirect({ to: '/login' })
-    }
-  },
   loader: ({ context: { queryClient }, params }) =>
     queryClient.ensureQueryData(recipeQuery(Number(params.id))),
   component: RecipeDetailPage,

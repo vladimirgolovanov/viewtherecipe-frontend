@@ -1,18 +1,12 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
-import { useQuery, queryOptions } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api } from '../api'
-
-const meQuery = queryOptions({
-  queryKey: ['user', 'me'],
-  queryFn: api.user.me,
-})
+import { api, meQuery } from '../api'
 
 export const Route = createFileRoute('/settings')({
-  beforeLoad: () => {
-    if (!localStorage.getItem('token')) {
-      throw redirect({ to: '/login' })
-    }
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const me = await queryClient.fetchQuery(meQuery).catch(() => null)
+    if (!me) throw redirect({ to: '/login' })
   },
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(meQuery),
@@ -53,8 +47,8 @@ function SettingsPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError } = useQuery(meQuery)
 
-  function logout() {
-    localStorage.removeItem('token')
+  async function logout() {
+    await api.auth.logout()
     navigate({ to: '/login' })
   }
 
