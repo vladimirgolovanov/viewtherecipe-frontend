@@ -19,22 +19,16 @@ function LoginPage() {
       window.onTelegramAuth = async (user) => {
         const params = new URLSearchParams(user)
 
-        const urlParams = new URLSearchParams(window.location.search)
-        const redirect = urlParams.get('redirect')
+        // URLSearchParams.get() truncates at unencoded & — extract raw value instead
+        const match = window.location.search.match(/[?&]redirect=(.+)$/)
+        const redirect = match ? match[1] : null
         if (redirect) {
           params.set('redirect', redirect)
         }
 
-        const res = await fetch(`/api/auth/telegram?${params}`, {
-          credentials: 'include',
-        })
+        await fetch(`/api/auth/telegram?${params}`, { credentials: 'include' })
 
-        if (res.redirected) {
-          window.location.href = res.url
-          return
-        }
-
-        await navigate({ to: '/recipes' })
+        window.location.href = redirect ?? '/recipes'
       }
 
       const script = document.createElement('script')
