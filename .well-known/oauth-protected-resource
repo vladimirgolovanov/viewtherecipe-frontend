@@ -1,0 +1,5 @@
+{
+    "resource": "https://savetherecipe.golovanov.me/mcp",
+    "authorization_servers": ["https://savetherecipe.golovanov.me"],
+    "registration_endpoint": "https://savetherecipe.golovanov.me/register"
+}
