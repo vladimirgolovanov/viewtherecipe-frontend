@@ -44,6 +44,13 @@ spec:
                 name: viewtherecipe
                 port:
                   number: 11456
+          - path: /register
+            pathType: Prefix
+            backend:
+              service:
+                name: viewtherecipe
+                port:
+                  number: 11456
           - path: /
             pathType: Prefix
             backend:
