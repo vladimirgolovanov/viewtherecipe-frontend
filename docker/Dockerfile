@@ -8,5 +8,6 @@ RUN npm run build
 FROM nginx:alpine
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY docker/.well-known /usr/share/nginx/html/.well-known
 EXPOSE 11457
 CMD ["nginx", "-g", "daemon off;"]
