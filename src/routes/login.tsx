@@ -17,7 +17,10 @@ function LoginPage() {
       const params = new URLSearchParams(user)
 
       const redirect = new URLSearchParams(window.location.search).get('redirect')
-      const safeRedirect = redirect?.startsWith('/') ? redirect : null
+      const safeRedirect = redirect && (
+          redirect.startsWith('/') ||
+          redirect.startsWith('https://savetherecipe.golovanov.me')
+      ) ? redirect : null
 
       if (safeRedirect) {
         params.set('redirect', safeRedirect)
