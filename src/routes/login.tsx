@@ -29,14 +29,7 @@ function LoginPage() {
         params.set('redirect', safeRedirect)
       }
 
-      const res = await fetch(`/api/auth/telegram?${params}`, { credentials: 'include' })
-
-      if (!res.ok) {
-        console.error('Auth failed')
-        return
-      }
-
-      window.location.href = safeRedirect ?? '/recipes'
+      window.location.href = `/api/auth/telegram?${params}`
     }
 
     const script = document.createElement('script')
